@@ -208,7 +208,7 @@ fn fetch_latest_rate(
             Err(err) => {
                 return FetchResult::Err {
                     message: err.to_string(),
-                    status: err.status,
+                    status: 0,
                 };
             }
         }
@@ -221,7 +221,7 @@ fn fetch_latest_rate(
             Err(err) => {
                 return FetchResult::Err {
                     message: err.to_string(),
-                    status: err.status,
+                    status: 0,
                 };
             }
         }
