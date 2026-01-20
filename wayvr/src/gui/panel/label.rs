@@ -154,6 +154,10 @@ pub(super) fn setup_custom_label<S: 'static>(
             ipd_on_tick(common, data, app);
             Ok(EventResult::Pass)
         }),
+        "fitbit_hr" => Box::new(|common, data, app, _| {
+            fitbit_on_tick(common, data, app);
+            Ok(EventResult::Pass)
+        }),
         unk => {
             log_invalid_attrib(parser_state, TAG, "_source", unk);
             return;
@@ -260,5 +264,21 @@ fn ipd_on_tick(
 ) {
     let text = app.input_state.ipd.to_string();
     let label = data.obj.get_as_mut::<WidgetLabel>().unwrap();
+    label.set_text(common, Translation::from_raw_text(&text));
+}
+
+fn fitbit_on_tick(
+    common: &mut event::CallbackDataCommon,
+    data: &mut event::CallbackData,
+    app: &AppState,
+) {
+    app.fitbit_state
+        .update(&app.session.config, app.watch_visible);
+
+    let label = data.obj.get_as_mut::<WidgetLabel>().unwrap();
+    let text = match app.fitbit_state.last_rate() {
+        Some(rate) => format!("{rate} bpm"),
+        None => "--".to_string(),
+    };
     label.set_text(common, Translation::from_raw_text(&text));
 }
