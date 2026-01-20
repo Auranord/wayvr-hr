@@ -50,9 +50,16 @@ impl FitbitState {
                             if let Some(token) = token {
                                 self.apply_token_update(token);
                             }
+                            log::debug!("Fitbit poll success.");
                         }
-                        FetchResult::Err(err) => {
-                            log::warn!("Fitbit poll failed: {err}");
+                        FetchResult::Err { message, status } => {
+                            if status == 429 {
+                                log::warn!("Fitbit poll rate limited (429). Backing off.");
+                                self.next_poll_at = Instant::now() + Duration::from_secs(60);
+                                self.next_interval_index = FITBIT_POLL_INTERVALS.len() - 1;
+                            } else {
+                                log::warn!("Fitbit poll failed: {message}");
+                            }
                         }
                     }
                 }
@@ -124,6 +131,7 @@ impl FitbitState {
 
         let access_token = self.access_token.clone();
         let token_expiry = self.access_token_expires_at;
+        log::debug!("Fitbit poll attempt.");
 
         let interval = FITBIT_POLL_INTERVALS
             .get(self.next_interval_index)
@@ -168,7 +176,7 @@ enum FetchResult {
         rate: Option<u32>,
         token: Option<TokenUpdate>,
     },
-    Err(String),
+    Err { message: String, status: u16 },
 }
 
 struct TokenUpdate {
@@ -198,7 +206,10 @@ fn fetch_latest_rate(
                 token_update = Some(update);
             }
             Err(err) => {
-                return FetchResult::Err(err.to_string());
+                return FetchResult::Err {
+                    message: err.to_string(),
+                    status: err.status,
+                };
             }
         }
     } else if token.is_none() && can_refresh {
@@ -208,13 +219,19 @@ fn fetch_latest_rate(
                 token_update = Some(update);
             }
             Err(err) => {
-                return FetchResult::Err(err.to_string());
+                return FetchResult::Err {
+                    message: err.to_string(),
+                    status: err.status,
+                };
             }
         }
     }
 
     let Some(token) = token else {
-        return FetchResult::Err("Fitbit access token is missing".to_string());
+        return FetchResult::Err {
+            message: "Fitbit access token is missing".to_string(),
+            status: 0,
+        };
     };
 
     match request_heart_rate(url, &token) {
@@ -232,13 +249,26 @@ fn fetch_latest_rate(
                                 rate,
                                 token: Some(update),
                             },
-                            Err(err) => FetchResult::Err(err.to_string()),
+                            Err(err) => {
+                                log::debug!("Fitbit poll failed after refresh: {err}");
+                                FetchResult::Err {
+                                    message: err.to_string(),
+                                    status: err.status,
+                                }
+                            }
                         }
                     }
-                    Err(err) => FetchResult::Err(err.to_string()),
+                    Err(err) => FetchResult::Err {
+                        message: err.to_string(),
+                        status: 0,
+                    },
                 }
             } else {
-                FetchResult::Err(err.to_string())
+                log::debug!("Fitbit poll failed: {err}");
+                FetchResult::Err {
+                    message: err.to_string(),
+                    status: err.status,
+                }
             }
         }
     }
