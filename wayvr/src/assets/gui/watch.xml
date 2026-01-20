@@ -94,6 +94,10 @@
           <label text="23:59" _source="clock" _display="time" _timezone="1" color="~clock_alt2_color" size="~clock_alt_size" weight="bold" align="center" />
         </div>
       </div>
+      <div gap="6" justify_content="center" align_items="center">
+        <label text="HR" size="16" color="~color_faded_20" weight="bold" />
+        <label text="--" _source="fitbit_hr" size="24" color="~color_text" weight="bold" />
+      </div>
     </div>
   </template>
 
