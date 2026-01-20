@@ -287,6 +287,21 @@ pub struct GeneralConfig {
 	pub clock_12h: bool,
 
 	#[serde(default)]
+	pub fitbit_access_token: Option<String>,
+
+	#[serde(default)]
+	pub fitbit_user_id: Option<String>,
+
+	#[serde(default)]
+	pub fitbit_refresh_token: Option<String>,
+
+	#[serde(default)]
+	pub fitbit_client_id: Option<String>,
+
+	#[serde(default)]
+	pub fitbit_client_secret: Option<String>,
+
+	#[serde(default)]
 	pub sets: Vec<SerializedWindowSet>,
 
 	#[serde(default)]

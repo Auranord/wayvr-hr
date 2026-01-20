@@ -216,6 +216,7 @@ fn sets_or_overlays(
 
 pub fn watch_fade<D>(app: &mut AppState, watch: &mut OverlayWindowData<D>) {
     let Some(state) = watch.config.active_state.as_mut() else {
+        app.watch_visible = false;
         return;
     };
 
@@ -227,4 +228,5 @@ pub fn watch_fade<D>(app: &mut AppState, watch: &mut OverlayWindowData<D>) {
         / (app.session.config.watch_view_angle_max - app.session.config.watch_view_angle_min);
     state.alpha += 0.1;
     state.alpha = state.alpha.clamp(0., 1.);
+    app.watch_visible = state.alpha > 0.05;
 }
