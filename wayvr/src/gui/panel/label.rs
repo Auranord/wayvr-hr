@@ -272,11 +272,11 @@ fn fitbit_on_tick(
     data: &mut event::CallbackData,
     app: &AppState,
 ) {
-    app.fitbit_state
-        .update(&app.session.config, app.watch_visible);
+    let mut fitbit_state = app.fitbit_state.borrow_mut();
+    fitbit_state.update(&app.session.config, app.watch_visible);
 
     let label = data.obj.get_as_mut::<WidgetLabel>().unwrap();
-    let text = match app.fitbit_state.last_rate() {
+    let text = match fitbit_state.last_rate() {
         Some(rate) => format!("{rate} bpm"),
         None => "--".to_string(),
     };

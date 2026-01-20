@@ -1,6 +1,7 @@
 use glam::Affine3A;
 use idmap::IdMap;
 use smallvec::{SmallVec, smallvec};
+use std::cell::RefCell;
 use std::sync::Arc;
 use wgui::log::LogErr;
 use wgui::{
@@ -46,7 +47,7 @@ pub struct AppState {
     pub anchor: Affine3A,
     pub anchor_grabbed: bool,
     pub watch_visible: bool,
-    pub fitbit_state: FitbitState,
+    pub fitbit_state: RefCell<FitbitState>,
 
     pub wgui_globals: WguiGlobals,
 
@@ -154,7 +155,7 @@ impl AppState {
             anchor: Affine3A::IDENTITY,
             anchor_grabbed: false,
             watch_visible: false,
-            fitbit_state: FitbitState::default(),
+            fitbit_state: RefCell::new(FitbitState::default()),
             wgui_globals: WguiGlobals::new(
                 assets,
                 defaults,
