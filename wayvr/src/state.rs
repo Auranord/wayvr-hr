@@ -25,7 +25,7 @@ use crate::{
     graphics::WGfxExtras,
     gui,
     ipc::{event_queue::SyncEventQueue, ipc_server, signal::WayVRSignal},
-    subsystem::{dbus::DbusConnector, input::HidWrapper},
+    subsystem::{dbus::DbusConnector, fitbit::FitbitState, input::HidWrapper},
 };
 
 pub struct AppState {
@@ -45,6 +45,8 @@ pub struct AppState {
     pub screens: SmallVec<[ScreenMeta; 8]>,
     pub anchor: Affine3A,
     pub anchor_grabbed: bool,
+    pub watch_visible: bool,
+    pub fitbit_state: FitbitState,
 
     pub wgui_globals: WguiGlobals,
 
@@ -151,6 +153,8 @@ impl AppState {
             screens: smallvec![],
             anchor: Affine3A::IDENTITY,
             anchor_grabbed: false,
+            watch_visible: false,
+            fitbit_state: FitbitState::default(),
             wgui_globals: WguiGlobals::new(
                 assets,
                 defaults,
