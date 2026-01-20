@@ -13,6 +13,12 @@
 # - "Europe/Oslo"
 # - "America/New_York"
 
+## Fitbit API credentials for the watch heart rate display.
+## Create a personal access token in your Fitbit developer account.
+#fitbit_access_token: ""
+## Optional: Fitbit user ID. Use "-" to target the current user.
+#fitbit_user_id: "-"
+
 ## On most desktops, WayVR is able to pick up your keymap via wayland. (Especially when using Fcitx5!)
 ## However, if this does not happen, you might want to set your keymap by hand.
 ## When using a simple layout:
